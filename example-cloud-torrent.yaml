@@ -45,7 +45,7 @@ IncomingPort: 50007
 # IncomingPort The port SimpleTorrent listens to.
 
 DoneCmd: ""
-# DoneCmd is An external program to call on task finished. See [DoneCmd Usage](https:#github.com/boypt/simple-torrent/wiki/DoneCmdUsage).
+# DoneCmd is An external program to call on task finished. See [DoneCmd Usage](https:#github.com/Dal-Papa/simple-torrent/wiki/DoneCmdUsage).
 
 SeedRatio: 1.5
 # SeedRatio The ratio of task Upload/Download data when reached, the task will be stop.

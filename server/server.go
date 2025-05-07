@@ -13,16 +13,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/boypt/simple-torrent/common"
-	"github.com/boypt/simple-torrent/server/httpmiddleware"
+	"github.com/Dal-Papa/simple-torrent/common"
+	"github.com/Dal-Papa/simple-torrent/server/httpmiddleware"
 
 	"errors"
 
+	"github.com/Dal-Papa/simple-torrent/engine"
+	ctstatic "github.com/Dal-Papa/simple-torrent/static"
 	"github.com/NYTimes/gziphandler"
 	"github.com/anacrolix/torrent"
 	"github.com/boypt/scraper"
-	"github.com/boypt/simple-torrent/engine"
-	ctstatic "github.com/boypt/simple-torrent/static"
 	"github.com/jpillora/cookieauth"
 	"github.com/jpillora/requestlog"
 	"github.com/jpillora/velox"
@@ -42,7 +42,7 @@ var (
 	ErrDiskSpace = errors.New("not enough disk space")
 )
 
-//Server is the "State" portion of the diagram
+// Server is the "State" portion of the diagram
 type Server struct {
 	//config
 	Title          string `opts:"help=Title of this instance,env=TITLE"`

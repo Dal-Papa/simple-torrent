@@ -11,11 +11,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Dal-Papa/simple-torrent/common"
 	eglog "github.com/anacrolix/log"
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/metainfo"
 	"github.com/anacrolix/torrent/storage"
-	"github.com/boypt/simple-torrent/common"
 	"github.com/fsnotify/fsnotify"
 )
 
@@ -35,7 +35,7 @@ var (
 	ErrMaxConnTasks  = errors.New("Max conncurrent task reached")
 )
 
-//the Engine Cloud Torrent engine, backed by anacrolix/torrent
+// the Engine Cloud Torrent engine, backed by anacrolix/torrent
 type Engine struct {
 	sync.RWMutex // race condition on ts,client
 	taskMutex    sync.Mutex
@@ -98,7 +98,7 @@ func (e *Engine) Configure(c *Config) error {
 	}
 
 	if c.MuteEngineLog {
-		tc.Logger = eglog.Discard
+		tc.Logger.SetHandlers(eglog.DiscardHandler)
 	}
 	tc.Debug = c.EngineDebug
 	tc.NoUpload = !c.EnableUpload
@@ -307,7 +307,7 @@ func (e *Engine) torrentEventProcessor(tt *torrent.Torrent, t *Torrent, ih strin
 	}
 }
 
-//GetTorrents just get the local infohash->Torrent map
+// GetTorrents just get the local infohash->Torrent map
 func (e *Engine) GetTorrents() *map[string]*Torrent {
 	return &e.ts
 }

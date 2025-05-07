@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/boypt/simple-torrent/common"
+	"github.com/Dal-Papa/simple-torrent/common"
 	"github.com/c2h5oh/datasize"
 	"golang.org/x/time/rate"
 )

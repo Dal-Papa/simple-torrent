@@ -56,7 +56,7 @@ systemctl stop cloud-torrent || true
 BINURL=$(wget -qO- $GHAPI | grep browser_download_url | grep "$BINTAG" | grep static | cut -d '"' -f 4 || true)
 if [[ -z $BINURL ]]; then
     echo "It's seems that $VERSION is not a valid version, check release page:"
-    echo "https://github.com/boypt/simple-torrent/releases"
+    echo "https://github.com/Dal-Papa/simple-torrent/releases"
     exit 1
 fi
 
@@ -86,7 +86,7 @@ Open browser to http://${HOSTIP}:3000/ now!
 * Default Password: ${PASSWORD}
 
 Read the wiki page about changing the default settings.
-    https://github.com/boypt/simple-torrent/wiki/AuthSecurity
+    https://github.com/Dal-Papa/simple-torrent/wiki/AuthSecurity
 
 #################################################################
 EOF

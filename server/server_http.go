@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/boypt/simple-torrent/common"
-	ctstatic "github.com/boypt/simple-torrent/static"
+	"github.com/Dal-Papa/simple-torrent/common"
+	ctstatic "github.com/Dal-Papa/simple-torrent/static"
 	"github.com/jpillora/velox"
 )
 
