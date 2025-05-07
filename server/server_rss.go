@@ -69,32 +69,32 @@ func (ritem *rssJSONItem) findFromFeedItem(i *gofeed.Item) (found bool) {
 		//still not found?, well... whatever
 	}
 
-	return (ritem.Magnet != "" || ritem.InfoHash != "" || ritem.Torrent != "")
+	return ritem.Magnet != "" || ritem.InfoHash != "" || ritem.Torrent != ""
 }
 
-func (r *rssJSONItem) readExtention(i *gofeed.Item, ext string) (found bool) {
+func (ritem *rssJSONItem) readExtention(i *gofeed.Item, ext string) (found bool) {
 
 	// There are no starndards for rss feeds contains torrents or magnets
 	// Heres some sites putting info in the extentions
 	if etor, ok := i.Extensions[ext]; ok {
 
 		if e, ok := etor["size"]; ok && len(e) > 0 {
-			r.Size = e[0].Value
+			ritem.Size = e[0].Value
 		}
 
 		if e, ok := etor["contentLength"]; ok && len(e) > 0 {
 			if size, err := strconv.ParseUint(e[0].Value, 10, 64); err == nil {
-				r.Size = humanize.Bytes(size)
+				ritem.Size = humanize.Bytes(size)
 			}
 		}
 
 		if e, ok := etor["magnetURI"]; ok && len(e) > 0 {
-			r.Magnet = e[0].Value
+			ritem.Magnet = e[0].Value
 			found = true
 		}
 
 		if e, ok := etor["infoHash"]; ok && len(e) > 0 {
-			r.InfoHash = e[0].Value
+			ritem.InfoHash = e[0].Value
 			found = true
 		}
 	}

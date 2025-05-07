@@ -16,7 +16,7 @@ func HandleError(err error) (b bool) {
 	return
 }
 
-//this logs the function name as well.
+// FancyHandleError logs the function name as well.
 func FancyHandleError(err error) (b bool) {
 	if err != nil {
 		// notice that we're using 1, so it will actually log the where
@@ -27,10 +27,4 @@ func FancyHandleError(err error) (b bool) {
 		b = true
 	}
 	return
-}
-
-func Must(err error) {
-	if err != nil {
-		panic(err)
-	}
 }

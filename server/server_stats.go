@@ -21,10 +21,10 @@ type osStats struct {
 }
 
 func (s *osStats) loadStats() {
-	//count cpu cycles between last count
-	//count disk usage
-	if cpu, err := cpu.Percent(0, false); err == nil {
-		s.CPU = cpu[0]
+	// count cpu cycles between last count
+	// as well as disk usage
+	if cpuPct, err := cpu.Percent(0, false); err == nil {
+		s.CPU = cpuPct[0]
 	}
 	if stat, err := disk.Usage(s.diskDirPath); err == nil {
 		s.DiskUsedPercent = stat.UsedPercent

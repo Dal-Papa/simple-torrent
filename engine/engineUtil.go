@@ -24,10 +24,10 @@ func (e *Engine) upsertTorrent(ih, name string, isQueueing bool) (*Torrent, erro
 	}()
 
 	e.RLock()
-	torrent, ok := e.ts[ih]
+	t, ok := e.ts[ih]
 	e.RUnlock()
 	if !ok {
-		torrent = &Torrent{
+		t = &Torrent{
 			Name:       name,
 			InfoHash:   ih,
 			IsQueueing: isQueueing,
@@ -37,19 +37,19 @@ func (e *Engine) upsertTorrent(ih, name string, isQueueing bool) (*Torrent, erro
 			dropWait:   make(chan struct{}),
 		}
 		e.Lock()
-		e.ts[ih] = torrent
+		e.ts[ih] = t
 		e.Unlock()
-		return torrent, nil
+		return t, nil
 	}
-	torrent.IsQueueing = isQueueing
-	return torrent, ErrTaskExists
+	t.IsQueueing = isQueueing
+	return t, ErrTaskExists
 }
 
 func (e *Engine) getTorrent(infohash string) (*Torrent, error) {
 	if t, ok := e.ts[infohash]; ok {
 		return t, nil
 	}
-	return nil, fmt.Errorf("Missing torrent %x", infohash)
+	return nil, fmt.Errorf("missing torrent %x", infohash)
 }
 
 func (e *Engine) deleteTorrent(infohash string) {
@@ -60,7 +60,7 @@ func (e *Engine) deleteTorrent(infohash string) {
 func (e *Engine) ParseTrackerList() error {
 	conf := e.config.TrackerList
 
-	trackers := []string{}
+	var trackers []string
 
 	for _, l := range strings.Split(conf, "\n") {
 		line := strings.TrimSpace(l)

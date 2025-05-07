@@ -2,8 +2,8 @@ package ctstatic
 
 import (
 	"embed"
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -35,5 +35,5 @@ func ReadAll(name string) ([]byte, error) {
 		return nil, err
 	}
 	defer f.Close()
-	return ioutil.ReadAll(f)
+	return io.ReadAll(f)
 }

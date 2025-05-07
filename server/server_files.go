@@ -3,7 +3,6 @@ package server
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -80,7 +79,7 @@ func list(path string, info os.FileInfo, node *fsNode, n *uint) error {
 	if (!info.IsDir() && !info.Mode().IsRegular()) || strings.HasPrefix(info.Name(), ".") {
 		return errors.New("ERROR: Non-regular file")
 	}
-	(*n)++
+	*n++
 	if (*n) > fileNumberLimit {
 		return errors.New("ERROR: Over file limit") //limit number of files walked
 	}
@@ -90,7 +89,7 @@ func list(path string, info os.FileInfo, node *fsNode, n *uint) error {
 	if !info.IsDir() {
 		return nil
 	}
-	children, err := ioutil.ReadDir(path)
+	children, err := os.ReadDir(path)
 	if err != nil {
 		return fmt.Errorf("ERROR: Failed to list files: %w", err)
 	}
@@ -98,7 +97,11 @@ func list(path string, info os.FileInfo, node *fsNode, n *uint) error {
 	for _, i := range children {
 		c := &fsNode{}
 		p := filepath.Join(path, i.Name())
-		if err := list(p, i, c, n); err != nil {
+		fi, err := i.Info()
+		if err != nil {
+			continue
+		}
+		if err := list(p, fi, c, n); err != nil {
 			continue
 		}
 		node.Size += c.Size

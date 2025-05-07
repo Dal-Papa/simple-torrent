@@ -2,6 +2,7 @@ package server
 
 import (
 	"compress/gzip"
+	"errors"
 	"fmt"
 	stdlog "log"
 	"net"
@@ -13,13 +14,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Dal-Papa/simple-torrent/common"
-	"github.com/Dal-Papa/simple-torrent/server/httpmiddleware"
-
-	"errors"
-
-	"github.com/Dal-Papa/simple-torrent/engine"
-	ctstatic "github.com/Dal-Papa/simple-torrent/static"
 	"github.com/NYTimes/gziphandler"
 	"github.com/anacrolix/torrent"
 	"github.com/boypt/scraper"
@@ -29,6 +23,11 @@ import (
 	"github.com/mmcdole/gofeed"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/spf13/viper"
+
+	"github.com/Dal-Papa/simple-torrent/common"
+	"github.com/Dal-Papa/simple-torrent/engine"
+	"github.com/Dal-Papa/simple-torrent/server/httpmiddleware"
+	ctstatic "github.com/Dal-Papa/simple-torrent/static"
 )
 
 const (
@@ -182,7 +181,7 @@ func (s *Server) Run(tpl *TPLInfo) error {
 
 	// engine configure
 	s.state.Stats.System.diskDirPath = c.DownloadDirectory
-	s.state.UseQueue = (c.MaxConcurrentTask > 0)
+	s.state.UseQueue = c.MaxConcurrentTask > 0
 	s.engineConfig = c
 	s.tpl.AllowRuntimeConfigure = c.AllowRuntimeConfigure
 	if err := s.engine.Configure(c); err != nil {

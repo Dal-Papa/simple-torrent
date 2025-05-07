@@ -1,6 +1,6 @@
 ![screenshot](https://user-images.githubusercontent.com/1033514/64239393-bdbb6480-cf32-11e9-9269-d8d10e7c0dc7.png)
 
-![Build Status](https://github.com/Dal-Papa/simple-torrent/workflows/Go/badge.svg) 
+[![release build](https://github.com/Dal-Papa/simple-torrent/actions/workflows/build-release.yml/badge.svg?event=release)](https://github.com/Dal-Papa/simple-torrent/actions/workflows/build-release.yml) 
 
 **SimpleTorrent** is a a self-hosted remote torrent client, written in Go (golang). Started torrents remotely, download sets of files on the local disk of the server, which are then retrievable or streamable via HTTP.
 
@@ -34,7 +34,7 @@ Also:
 
 ## Binary
 
-See [the latest release](https://github.com/boypt/cloud-torrent/releases/latest) or use the oneline script to do a quick install on a modern Linux machines.
+See [the latest release](https://github.com/Dal-Papa/simple-torrent/releases/latest) or use the oneline script to do a quick install on a modern Linux machines.
 
 ``` bash
 bash <(wget -qO- https://git.io/simpletorrentqs)

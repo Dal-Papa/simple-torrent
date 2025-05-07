@@ -2,7 +2,6 @@ package engine
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -119,7 +118,7 @@ func (e *Engine) RestoreTask(fn string) error {
 			os.Remove(fn)
 		}
 	} else if strings.HasSuffix(fn, ".info") && isCachedFile {
-		mag, err := ioutil.ReadFile(fn)
+		mag, err := os.ReadFile(fn)
 		if err != nil {
 			log.Printf("Task: fail to read %s\n", fn)
 			return err
@@ -137,7 +136,7 @@ func (e *Engine) RestoreTask(fn string) error {
 
 func (e *Engine) RestoreCacheDir() {
 
-	files, err := ioutil.ReadDir(e.cacheDir)
+	files, err := os.ReadDir(e.cacheDir)
 	if err != nil {
 		log.Println("RestoreCacheDir failed read cachedir", err)
 		return
@@ -145,7 +144,9 @@ func (e *Engine) RestoreCacheDir() {
 
 	// sort by modtime
 	sort.Slice(files, func(i, j int) bool {
-		return files[i].ModTime().Before(files[j].ModTime())
+		ii, _ := files[i].Info()
+		ij, _ := files[j].Info()
+		return ii.ModTime().Before(ij.ModTime())
 	})
 
 	for _, i := range files {

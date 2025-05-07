@@ -30,12 +30,12 @@ const (
 )
 
 var (
-	ErrTaskExists    = errors.New("Task already exists")
-	ErrWaitListEmpty = errors.New("Wait list empty")
-	ErrMaxConnTasks  = errors.New("Max conncurrent task reached")
+	ErrTaskExists    = errors.New("task already exists")
+	ErrWaitListEmpty = errors.New("wait list empty")
+	ErrMaxConnTasks  = errors.New("max conncurrent task reached")
 )
 
-// the Engine Cloud Torrent engine, backed by anacrolix/torrent
+// Engine Cloud Torrent engine, backed by anacrolix/torrent
 type Engine struct {
 	sync.RWMutex // race condition on ts,client
 	taskMutex    sync.Mutex
@@ -73,7 +73,7 @@ func (e *Engine) SetConfig(c *Config) {
 func (e *Engine) Configure(c *Config) error {
 	//recieve config
 	if c.IncomingPort <= 0 {
-		return fmt.Errorf("Invalid incoming port (%d)", c.IncomingPort)
+		return fmt.Errorf("invalid incoming port (%d)", c.IncomingPort)
 	}
 	if c.TrackerList == "" {
 		c.TrackerList = "remote:" + defaultTrackerListURL
@@ -132,11 +132,11 @@ func (e *Engine) Configure(c *Config) error {
 		}
 
 		// runtime reconfigure need to retry while creating client,
-		// wait max for 3 * 10 seconds
+		// wait maxRetry for 3 * 10 seconds
 		var err error
-		max := 10
-		for max > 0 {
-			max--
+		maxRetry := 10
+		for maxRetry > 0 {
+			maxRetry--
 			e.client, err = torrent.NewClient(tc)
 			if err == nil {
 				break
@@ -191,7 +191,7 @@ func (e *Engine) NewTorrentByFilePath(path string) error {
 	// torrent.TorrentSpecFromMetaInfo may panic if the info is malformed
 	defer func() error {
 		if r := recover(); r != nil {
-			err := fmt.Errorf("Error loading new torrent from file %s: %+v", path, r)
+			err := fmt.Errorf("error loading new torrent from file %s: %+v", path, r)
 			log.Println(err)
 			return err
 		}
@@ -436,7 +436,7 @@ func (e *Engine) StartFile(infohash, filepath string) error {
 		}
 	}
 	if f == nil {
-		return fmt.Errorf("Missing file %s", filepath)
+		return fmt.Errorf("missing file %s", filepath)
 	}
 	if f.Started {
 		return fmt.Errorf("already started")

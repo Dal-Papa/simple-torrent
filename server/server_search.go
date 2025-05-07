@@ -4,7 +4,7 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -25,7 +25,7 @@ func (s *Server) fetchSearchConfig(confurl string) error {
 		return err
 	}
 	defer resp.Body.Close()
-	newConfig, err := ioutil.ReadAll(resp.Body)
+	newConfig, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}

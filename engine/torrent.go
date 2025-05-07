@@ -60,37 +60,36 @@ type File struct {
 }
 
 // Update retrive info from torrent.Torrent
-func (torrent *Torrent) updateOnGotInfo(t *torrent.Torrent) {
+func (t *Torrent) updateOnGotInfo(tt *torrent.Torrent) {
 
-	if t.Info() != nil && !torrent.Loaded {
-		torrent.t = t
-		torrent.Name = t.Name()
-		torrent.Loaded = true
-		torrent.updateFileStatus()
-		torrent.updateTorrentStatus()
-		torrent.updateConnStat()
+	if tt.Info() != nil && !t.Loaded {
+		t.t = tt
+		t.Name = tt.Name()
+		t.Loaded = true
+		t.updateFileStatus()
+		t.updateTorrentStatus()
+		t.updateConnStat()
 
-		if torrent.Magnet == "" {
-			meta := t.Metainfo()
-			if ifo, err := meta.UnmarshalInfo(); err == nil {
-				magnet := meta.Magnet(nil, &ifo).String()
-				torrent.Magnet = magnet
+		if t.Magnet == "" {
+			meta := tt.Metainfo()
+			if magnet, err := meta.MagnetV2(); err == nil {
+				t.Magnet = magnet.String()
 			} else {
-				torrent.Magnet = "ERROR{}"
+				t.Magnet = "ERROR{}"
 			}
-			torrent.Name = t.Name()
+			t.Name = tt.Name()
 		}
 	}
 }
 
-func (torrent *Torrent) updateConnStat() {
+func (t *Torrent) updateConnStat() {
 	now := time.Now()
-	lastStat := torrent.Stats
-	curStat := torrent.t.Stats()
+	lastStat := t.Stats
+	curStat := t.t.Stats()
 
 	if lastStat == nil {
-		torrent.updatedAt = now
-		torrent.Stats = &curStat
+		t.updatedAt = now
+		t.Stats = &curStat
 		return
 	}
 
@@ -100,82 +99,80 @@ func (torrent *Torrent) updateConnStat() {
 	lRead := lastStat.BytesReadUsefulData.Int64()
 	lWrite := lastStat.BytesWrittenData.Int64()
 
-	// download will stop if torrent is done (bRead equals)
+	// download will stop if t is done (bRead equals)
 	if bRead >= lRead || bWrite > lWrite {
 
 		// calculate ratio
 		if bRead > 0 {
-			torrent.SeedRatio = float32(bWrite) / float32(bRead)
-		} else if torrent.Done {
-			torrent.SeedRatio = float32(bWrite) / float32(torrent.Size)
+			t.SeedRatio = float32(bWrite) / float32(bRead)
+		} else if t.Done {
+			t.SeedRatio = float32(bWrite) / float32(t.Size)
 		}
 
-		if lastStat != nil {
-			// calculate rate
-			dtinv := float32(time.Second) / float32(now.Sub(torrent.updatedAt))
+		// calculate rate
+		dtinv := float32(time.Second) / float32(now.Sub(t.updatedAt))
 
-			dldb := float32(bRead - lRead)
-			torrent.DownloadRate = dldb * dtinv
+		dldb := float32(bRead - lRead)
+		t.DownloadRate = dldb * dtinv
 
-			uldb := float32(bWrite - lWrite)
-			torrent.UploadRate = uldb * dtinv
-		}
+		uldb := float32(bWrite - lWrite)
+		t.UploadRate = uldb * dtinv
 
-		torrent.Downloaded = torrent.t.BytesCompleted()
-		torrent.Uploaded = bWrite
-		torrent.updatedAt = now
-		torrent.Stats = &curStat
+		t.Downloaded = t.t.BytesCompleted()
+		t.Uploaded = bWrite
+		t.updatedAt = now
+		t.Stats = &curStat
 	}
 }
 
-func (torrent *Torrent) updateFileStatus() {
-	if torrent.IsAllFilesDone {
+func (t *Torrent) updateFileStatus() {
+	if t.IsAllFilesDone {
 		return
 	}
 
-	tfiles := torrent.t.Files()
-	if len(tfiles) > 0 && torrent.Files == nil {
-		torrent.Files = make([]*File, len(tfiles))
+	tfiles := t.t.Files()
+	if len(tfiles) > 0 && t.Files == nil {
+		t.Files = make([]*File, len(tfiles))
 	}
 
 	//merge in files
 	doneFlag := true
 	for i, f := range tfiles {
 		path := f.Path()
-		file := torrent.Files[i]
+		file := t.Files[i]
 		if file == nil {
-			file = &File{Path: path, Started: torrent.Started, f: f}
-			torrent.Files[i] = file
+			file = &File{Path: path, Started: t.Started, f: f}
+			t.Files[i] = file
 		}
 
 		file.Size = f.Length()
 		file.Completed = f.BytesCompleted()
 		file.Percent = percent(file.Completed, file.Size)
-		file.Done = (file.Completed == file.Size)
+		file.Done = file.Completed == file.Size
 		if file.Done && !file.DoneCmdCalled {
 			file.DoneCmdCalled = true
-			go torrent.callDoneCmd(file.Path, "file", file.Size)
+			go t.callDoneCmd(file.Path, "file", file.Size)
 		}
 		if !file.Done {
 			doneFlag = false
 		}
 	}
 
-	torrent.IsAllFilesDone = doneFlag
+	t.IsAllFilesDone = doneFlag
 }
 
-func (torrent *Torrent) updateTorrentStatus() {
-	torrent.Size = torrent.t.Length()
-	torrent.Percent = percent(torrent.t.BytesCompleted(), torrent.Size)
-	torrent.Done = (torrent.t.BytesMissing() == 0)
-	torrent.IsSeeding = torrent.t.Seeding() && torrent.Done
+func (t *Torrent) updateTorrentStatus() {
+	t.Size = t.t.Length()
+	t.Percent = percent(t.t.BytesCompleted(), t.Size)
+	t.Done = t.t.BytesMissing() == 0
+	t.IsSeeding = t.t.Seeding() && t.Done
 
 	// this process called at least on second Update calls
-	if torrent.Done && !torrent.DoneCmdCalled {
-		torrent.DoneCmdCalled = true
-		torrent.FinishedAt = time.Now()
-		log.Println("[TaskFinished]", torrent.InfoHash)
-		go torrent.callDoneCmd(torrent.Name, "torrent", torrent.Size)
+	if t.Done && !t.DoneCmdCalled {
+		t.DoneCmdCalled = true
+		t.FinishedAt = time.Now()
+		log.Println("[TaskFinished]", t.InfoHash)
+		go t.callDoneCmd(t.Name, "t", t.Size)
 	}
 }
 
