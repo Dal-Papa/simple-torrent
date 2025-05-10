@@ -1,7 +1,7 @@
 version: '3'
 services:
   service.simpletorrent:
-    image: Dal-Papa/simple-torrent
+    image: ghcr.io/dal-papa/simple-torrent
     restart: unless-stopped
     ports:
       - "3000:3000"

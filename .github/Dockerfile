@@ -9,8 +9,7 @@ RUN go build \
   -ldflags "-s -w -X main.version=$(git describe --abbrev=0 --tags)" \
   -o /tmp/bin
 # run stage
-FROM scratch
+FROM alpine
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-WORKDIR /app
-COPY --from=build /tmp/bin /app/bin
-ENTRYPOINT ["/app/bin"]
+COPY --from=build /tmp/bin /usr/local/bin/simple-torrent
+ENTRYPOINT ["simple-torrent"]
