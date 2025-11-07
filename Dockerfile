@@ -16,4 +16,5 @@ RUN go build -trimpath -ldflags "-s -w -X main.VERSION=$(git describe --tags)" -
 FROM alpine
 COPY --from=builder /usr/local/bin/cloud-torrent /usr/local/bin/cloud-torrent
 RUN apk update && apk add ca-certificates libstdc++
+EXPOSE 3000
 ENTRYPOINT ["cloud-torrent"]
